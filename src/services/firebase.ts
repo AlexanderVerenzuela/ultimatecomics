@@ -33,12 +33,19 @@ function initFirebase(creds?: FirebaseCredentials) {
   }
 }
 
+export async function saveComicToFirebase(creds: FirebaseCredentials, comic: ComicImport): Promise<void> {
+  if (!comic.id) return;
+  const app = initFirebase(creds);
+  const db = getFirestore(app);
+  const docRef = doc(db, 'comics', comic.id);
+  const { ...data } = comic;
+  await writeBatch(db).set(docRef, data).commit();
+}
+
 export async function uploadToFirebase(creds: FirebaseCredentials, comics: ComicImport[]): Promise<void> {
   const app = initFirebase(creds);
   const db = getFirestore(app);
 
-  // Firestore write batch limit is 500 documents.
-  // We will divide the 854+ comics into batches of 300.
   const batchSize = 300;
   for (let i = 0; i < comics.length; i += batchSize) {
     const currentBatch = comics.slice(i, i + batchSize);
@@ -47,7 +54,6 @@ export async function uploadToFirebase(creds: FirebaseCredentials, comics: Comic
     currentBatch.forEach((comic) => {
       if (comic.id) {
         const docRef = doc(db, 'comics', comic.id);
-        // Save matching schema fields
         batch.set(docRef, comic);
       }
     });
