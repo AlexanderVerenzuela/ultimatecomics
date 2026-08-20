@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../services/db';
-import { uploadToFirebase, downloadFromFirebase, FirebaseCredentials } from '../services/firebase';
+import { uploadToFirebase, downloadFromFirebase, FirebaseCredentials, DEFAULT_FIREBASE_CREDS } from '../services/firebase';
 import { ComicImport } from '../utils/parser';
 import { Database, Save, CheckCircle, RefreshCw, AlertCircle } from 'lucide-react';
 
@@ -10,10 +10,10 @@ interface SettingsViewProps {
 }
 
 export default function SettingsView({ comics, onSyncComplete }: SettingsViewProps) {
-  const [apiKey, setApiKey] = useState('');
-  const [authDomain, setAuthDomain] = useState('');
-  const [projectId, setProjectId] = useState('');
-  const [appId, setAppId] = useState('');
+  const [apiKey, setApiKey] = useState(DEFAULT_FIREBASE_CREDS.apiKey);
+  const [authDomain, setAuthDomain] = useState(DEFAULT_FIREBASE_CREDS.authDomain);
+  const [projectId, setProjectId] = useState(DEFAULT_FIREBASE_CREDS.projectId);
+  const [appId, setAppId] = useState(DEFAULT_FIREBASE_CREDS.appId);
   
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');

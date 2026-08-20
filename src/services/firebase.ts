@@ -9,12 +9,21 @@ export interface FirebaseCredentials {
   appId: string;
 }
 
-function initFirebase(creds: FirebaseCredentials) {
+export const DEFAULT_FIREBASE_CREDS: FirebaseCredentials = {
+  apiKey: "AIzaSyCyUnZkl0HfARZnzzeRTVGtwilZ5az3RuE",
+  authDomain: "comics-18b71.firebaseapp.com",
+  projectId: "comics-18b71",
+  appId: "1:258140295261:web:1c5608c4e93eba06387db4"
+};
+
+function initFirebase(creds?: FirebaseCredentials) {
+  const activeCreds = creds && creds.apiKey ? creds : DEFAULT_FIREBASE_CREDS;
+  
   const firebaseConfig = {
-    apiKey: creds.apiKey,
-    authDomain: creds.authDomain,
-    projectId: creds.projectId,
-    appId: creds.appId,
+    apiKey: activeCreds.apiKey,
+    authDomain: activeCreds.authDomain,
+    projectId: activeCreds.projectId,
+    appId: activeCreds.appId,
   };
 
   if (getApps().length === 0) {
