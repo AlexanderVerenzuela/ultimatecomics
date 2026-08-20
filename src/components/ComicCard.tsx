@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { ComicImport } from '../utils/parser';
+import { searchCovers } from '../services/coverService';
 import { ChevronUp, ChevronDown, Edit, AlertCircle, GripVertical } from 'lucide-react';
 
 interface ComicCardProps {
@@ -11,6 +12,7 @@ interface ComicCardProps {
   onMoveDown: (comic: ComicImport) => void;
   onSelect: (id: string, selected: boolean) => void;
   onToggleRead: (comic: ComicImport) => void;
+  onAutoFetchCover?: (updatedComic: ComicImport) => void;
   isSelected: boolean;
   isDraggable?: boolean;
 }
@@ -22,9 +24,33 @@ export default function ComicCard({
   onMoveDown,
   onSelect,
   onToggleRead,
+  onAutoFetchCover,
   isSelected,
   isDraggable = true
 }: ComicCardProps) {
+
+  // Lazy load covers in the background for visible items
+  useEffect(() => {
+    if (comic.portadaUrl || !onAutoFetchCover) return;
+
+    // Stagger API calls with a random delay (500ms - 4500ms) to avoid rate limits
+    const delay = Math.floor(Math.random() * 4000) + 500;
+    const timer = setTimeout(async () => {
+      try {
+        const results = await searchCovers(comic.serie, comic.numero, comic.anio);
+        if (results && results.length > 0) {
+          onAutoFetchCover({
+            ...comic,
+            portadaUrl: results[0].imageUrl
+          });
+        }
+      } catch (err) {
+        console.error(`Error loading lazy cover for ${comic.titulo}:`, err);
+      }
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [comic.id, comic.portadaUrl, onAutoFetchCover]);
   
   const {
     attributes,

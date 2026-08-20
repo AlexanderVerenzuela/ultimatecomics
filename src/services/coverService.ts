@@ -10,13 +10,31 @@ export async function searchCovers(
   numero: string,
   anio?: number
 ): Promise<CoverSearchResult[]> {
-  const query = `${serie} ${numero} comic ${anio || ''}`.trim();
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=8`;
+  // Clean special characters like '#' and format number cleanly (e.g., '#1' -> '1')
+  const cleanNum = numero.replace('#', '').trim();
+  const cleanSerie = serie.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+  
+  // Search query format: "Ultimate Spider-Man 1 comic"
+  const query = `${cleanSerie} ${cleanNum} comic`.trim();
+  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=5`;
 
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error('Error de red al buscar portadas');
     const data = await res.json();
+
+    if (!data.items || data.items.length === 0) {
+      // Fallback query if first search fails: "Ultimate Spider-Man 1" without the word "comic"
+      const fallbackQuery = `${cleanSerie} ${cleanNum}`.trim();
+      const fallbackUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(fallbackQuery)}&maxResults=5`;
+      const fallbackRes = await fetch(fallbackUrl);
+      if (fallbackRes.ok) {
+        const fallbackData = await fallbackRes.json();
+        if (fallbackData.items) {
+          data.items = fallbackData.items;
+        }
+      }
+    }
 
     if (!data.items) return [];
 
