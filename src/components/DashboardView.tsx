@@ -17,58 +17,7 @@ export default function DashboardView({ comics, onNavigateToView, onUpdateMultip
   const skipped = comics.filter(c => c.estadoLectura === 'saltado').length;
   const scanPending = comics.filter(c => c.pendienteEscaneo).length;
 
-  const noCoverComics = comics.filter(c => !c.portadaUrl);
   const percentComplete = total > 0 ? Math.round((read / total) * 100) : 0;
-
-  // Auto cover fetcher states
-  const [fetching, setFetching] = useState(false);
-  const [fetchProgress, setFetchProgress] = useState({ current: 0, total: 0, found: 0 });
-  const [stopRequested, setStopRequested] = useState(false);
-
-  const startAutoFetch = async () => {
-    if (noCoverComics.length === 0) return;
-    setFetching(true);
-    setStopRequested(false);
-    setFetchProgress({ current: 0, total: noCoverComics.length, found: 0 });
-
-    const updatedComics: ComicImport[] = [];
-    
-    for (let i = 0; i < noCoverComics.length; i++) {
-      if (stopRequested) {
-        break;
-      }
-
-      const comic = noCoverComics[i];
-      setFetchProgress(prev => ({ ...prev, current: i + 1 }));
-
-      try {
-        const results = await searchCovers(comic.serie, comic.numero, comic.anio);
-        if (results && results.length > 0) {
-          const matched = { ...comic, portadaUrl: results[0].imageUrl };
-          updatedComics.push(matched);
-          setFetchProgress(prev => ({ ...prev, found: prev.found + 1 }));
-          
-          // Save in batches of 10 to update database and UI progress incrementally
-          if (updatedComics.length >= 10 || i === noCoverComics.length - 1) {
-            onUpdateMultiple([...updatedComics]);
-            updatedComics.length = 0; // Clear array
-          }
-        }
-      } catch (err) {
-        console.error(`Error buscando portada para ${comic.titulo}:`, err);
-      }
-
-      // Small delay to avoid triggering API rate limit blocks
-      await new Promise(resolve => setTimeout(resolve, 300));
-    }
-
-    // Save any remaining updates
-    if (updatedComics.length > 0) {
-      onUpdateMultiple(updatedComics);
-    }
-    
-    setFetching(false);
-  };
 
   // Breakdown by series
   const seriesStats: { [key: string]: { total: number; read: number } } = {};
@@ -128,24 +77,6 @@ export default function DashboardView({ comics, onNavigateToView, onUpdateMultip
         </div>
         
         <div className="flex gap-2">
-          {noCoverComics.length > 0 && total > 0 && !fetching && (
-            <button
-              onClick={startAutoFetch}
-              className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-755 hover:to-indigo-755 text-white rounded-lg font-bold text-sm transition-all shadow-lg flex items-center gap-2"
-            >
-              <Sparkles size={16} /> Auto-buscar {noCoverComics.length} Portadas
-            </button>
-          )}
-
-          {fetching && (
-            <button
-              onClick={() => setStopRequested(true)}
-              className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg font-bold text-sm transition-all border border-white/10"
-            >
-              Detener Auto-búsqueda
-            </button>
-          )}
-
           {total === 0 && (
             <button 
               onClick={() => onNavigateToView('import')}
@@ -156,27 +87,6 @@ export default function DashboardView({ comics, onNavigateToView, onUpdateMultip
           )}
         </div>
       </div>
-
-      {/* Auto fetch covers progress bar */}
-      {fetching && (
-        <div className="p-5 bg-gradient-to-r from-indigo-950/20 to-purple-950/20 border border-indigo-900/40 rounded-xl space-y-3">
-          <div className="flex justify-between items-center text-xs">
-            <span className="flex items-center gap-2 font-semibold text-indigo-400">
-              <Loader2 className="animate-spin" size={16} />
-              Buscando portadas en internet...
-            </span>
-            <span className="font-mono text-zinc-400">
-              {fetchProgress.current} / {fetchProgress.total} cómics procesados ({fetchProgress.found} portadas añadidas)
-            </span>
-          </div>
-          <div className="w-full h-3 bg-black/40 rounded-full overflow-hidden border border-white/5">
-            <div 
-              className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-300"
-              style={{ width: `${(fetchProgress.current / fetchProgress.total) * 100}%` }}
-            />
-          </div>
-        </div>
-      )}
 
       {/* Hero Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
