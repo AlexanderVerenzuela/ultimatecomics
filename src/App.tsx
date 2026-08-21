@@ -13,6 +13,7 @@ import EventsView from './components/EventsView';
 import ImportExportView from './components/ImportExportView';
 import SettingsView from './components/SettingsView';
 import EditComicModal from './components/EditComicModal';
+import defaultComicsList from './data/comics_list.json';
 
 import { Menu, BookOpen } from 'lucide-react';
 
@@ -27,6 +28,17 @@ export default function App() {
     () => db.comics.orderBy('ordenLectura').toArray(),
     []
   ) || [];
+
+  // Auto-initialize DB with Excel data if empty
+  useEffect(() => {
+    const initDefaultData = async () => {
+      const count = await db.comics.count();
+      if (count === 0) {
+        await saveParsedComics(defaultComicsList as any);
+      }
+    };
+    initDefaultData();
+  }, []);
 
   // Automatic sync on startup
   useEffect(() => {

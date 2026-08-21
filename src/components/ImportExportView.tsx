@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { parseComicList, ComicImport } from '../utils/parser';
 import { FileText, Download, Upload, AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react';
+import preloadedExcelComics from '../data/comics_list.json';
 
 interface ImportExportViewProps {
   onImportComplete: (comics: ComicImport[]) => void;
@@ -13,6 +14,12 @@ export default function ImportExportView({ onImportComplete, comics }: ImportExp
   const [showPreview, setShowPreview] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+
+  const handleLoadExcelTemplate = () => {
+    onImportComplete(preloadedExcelComics as any);
+    setSuccessMsg(`¡Colección cargada con éxito desde el Excel clasificado (${preloadedExcelComics.length} cómics)!`);
+    setTimeout(() => setSuccessMsg(''), 4000);
+  };
 
   const handleLoadTemplate = async () => {
     try {
@@ -149,6 +156,13 @@ export default function ImportExportView({ onImportComplete, comics }: ImportExp
           <p className="text-xs text-zinc-400 leading-relaxed">
             Pega una lista de nombres de archivo (.cbr) con numeración de colección. El sistema auto-detectará si es paralelo, el número, año y serie.
           </p>
+
+          <button
+            onClick={handleLoadExcelTemplate}
+            className="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white rounded-lg text-xs font-black transition-all text-center shadow-lg uppercase tracking-wider"
+          >
+            📊 Cargar desde Excel Clasificado (Recomendado)
+          </button>
 
           <button
             onClick={handleLoadTemplate}
