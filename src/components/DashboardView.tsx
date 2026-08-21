@@ -36,8 +36,7 @@ export default function DashboardView({ comics, onNavigateToView, onUpdateMultip
       read: stat.read,
       percent: Math.round((stat.read / stat.total) * 100)
     }))
-    .sort((a, b) => b.total - a.total)
-    .slice(0, 8); // Top 8 series by volume
+    .sort((a, b) => b.total - a.total);
 
   // Breakdown by importance
   const importanceLabels = {
@@ -212,8 +211,8 @@ export default function DashboardView({ comics, onNavigateToView, onUpdateMultip
       {/* Series Progress */}
       <div className="bg-ultimate-card border border-white/5 p-6 rounded-xl space-y-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-white/90">Progreso por Series Clave</h3>
-          <span className="text-xs text-zinc-400 font-medium">Top 8 por volumen de tomos</span>
+          <h3 className="text-lg font-semibold text-white/90">Progreso por Series</h3>
+          <span className="text-xs text-zinc-400 font-medium">Total: {sortedSeries.length} series</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
