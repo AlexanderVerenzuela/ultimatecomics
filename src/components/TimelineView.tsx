@@ -52,20 +52,6 @@ export default function TimelineView({ comics, onEditComic }: TimelineViewProps)
 
               {/* Card Container */}
               <div className="flex gap-4 p-4 bg-ultimate-card border border-white/5 rounded-xl hover:border-ultimate-accent/40 hover:shadow-card-hover transition-all duration-300">
-                {/* Cover Thumbnail */}
-                <div className="w-16 h-24 bg-zinc-900 border border-white/10 rounded overflow-hidden flex-shrink-0 flex items-center justify-center">
-                  {comic.portadaUrl ? (
-                    <img 
-                      src={comic.portadaUrl} 
-                      alt={comic.titulo}
-                      className="w-full h-full object-cover" 
-                      loading="lazy"
-                    />
-                  ) : (
-                    <ImageIcon size={18} className="text-zinc-700" />
-                  )}
-                </div>
-
                 {/* Details */}
                 <div className="flex-1 flex flex-col justify-between">
                   <div>

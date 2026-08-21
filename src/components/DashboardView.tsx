@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
 import { ComicImport } from '../utils/parser';
-import { searchCovers } from '../services/coverService';
-import { BookOpen, CheckCircle, Clock, AlertTriangle, Image as ImageIcon, Loader2, Sparkles } from 'lucide-react';
+import { BookOpen, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 
 interface DashboardViewProps {
   comics: ComicImport[];

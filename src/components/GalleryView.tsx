@@ -434,7 +434,6 @@ export default function GalleryView({
                     onMoveDown={handleMoveDown}
                     onSelect={handleSelectOne}
                     onToggleRead={handleToggleRead}
-                    onAutoFetchCover={onUpdateComic}
                     isSelected={selectedIds.includes(comic.id || '')}
                     isDraggable={isDndActive}
                   />

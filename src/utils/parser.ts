@@ -1,6 +1,3 @@
-// Try importing pre-fetched covers, fallback to empty object if not built yet
-import preloadedCovers from '../data/covers.json';
-
 export interface ComicImport {
   id?: string;
   ordenLectura: number;
@@ -193,7 +190,6 @@ export function parseComicLine(line: string, index: number): ComicImport | null 
 
   const cleanTitle = `${cleanSeries} ${issueNum}`;
   const generatedId = `comic-${fileOrderStr}-${index}-${Math.random().toString(36).substr(2, 9)}`;
-  const mappedCover = (preloadedCovers as any)[trimmed] || undefined;
 
   return {
     id: generatedId,
@@ -207,7 +203,7 @@ export function parseComicLine(line: string, index: number): ComicImport | null 
     anio: defaultYear,
     importancia,
     tipo: defaultTipo,
-    portadaUrl: mappedCover,
+    portadaUrl: undefined,
     estadoLectura: 'pendiente',
     notas: notesArray.join(', '),
     universo: 'Tierra-1610',

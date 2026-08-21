@@ -95,7 +95,6 @@ export default function ListView({ comics, onUpdateComic, onEditComic }: ListVie
               <th className="py-4 px-4 cursor-pointer hover:text-white" onClick={() => handleSort('ordenArchivo')}>
                 <div className="flex items-center gap-1">Orden Archivo <ArrowUpDown size={12} /></div>
               </th>
-              <th className="py-4 px-4">Portada</th>
               <th className="py-4 px-4 cursor-pointer hover:text-white" onClick={() => handleSort('titulo')}>
                 <div className="flex items-center gap-1">Cómic <ArrowUpDown size={12} /></div>
               </th>
@@ -113,15 +112,6 @@ export default function ListView({ comics, onUpdateComic, onEditComic }: ListVie
                 </td>
                 <td className="py-3 px-4 font-mono text-zinc-500">
                   #{String(comic.ordenArchivoDisplay)}
-                </td>
-                <td className="py-3 px-4">
-                  <div className="w-9 h-14 bg-zinc-900 border border-white/10 rounded overflow-hidden flex items-center justify-center">
-                    {comic.portadaUrl ? (
-                      <img src={comic.portadaUrl} alt="miniatura" className="w-full h-full object-cover" />
-                    ) : (
-                      <ImageIcon size={14} className="text-zinc-600" />
-                    )}
-                  </div>
                 </td>
                 <td className="py-3 px-4">
                   <div>
