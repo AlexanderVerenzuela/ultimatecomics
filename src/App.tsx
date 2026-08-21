@@ -29,12 +29,23 @@ export default function App() {
     []
   ) || [];
 
-  // Auto-initialize DB with Excel data if empty
+  // Auto-initialize DB with Excel data if empty or not fully migrated to the Excel layout
   useEffect(() => {
     const initDefaultData = async () => {
-      const count = await db.comics.count();
-      if (count === 0) {
+      const hasForcedExcel = await db.config.get('excel_force_reload_v2');
+      if (!hasForcedExcel || hasForcedExcel.value !== 'true') {
+        // Force reset database to import the exact Excel classifications and milestones notes
+        await db.comics.clear();
         await saveParsedComics(defaultComicsList as any);
+        await db.config.put({ key: 'excel_force_reload_v2', value: 'true' });
+        
+        // Push the new list immediately to Firebase Firestore
+        try {
+          const creds = await getFirebaseCredentials();
+          await uploadToFirebase(creds, defaultComicsList as any);
+        } catch (e) {
+          console.error('Error uploading fresh Excel DB to Firebase on auto-migration:', e);
+        }
       }
     };
     initDefaultData();
