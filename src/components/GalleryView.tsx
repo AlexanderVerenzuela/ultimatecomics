@@ -199,8 +199,49 @@ export default function GalleryView({
     onUpdateComic(updated);
   };
 
+  // Get the next 4 pending comics in reading order
+  const nextPending = comics
+    .filter(c => c.estadoLectura === 'pendiente' || c.estadoLectura === 'leyendo')
+    .slice(0, 4);
+
   return (
     <div className="space-y-6 fade-in">
+      {/* Continuar Leyendo - Quick Actions Panel */}
+      {nextPending.length > 0 && (
+        <div className="p-5 bg-gradient-to-r from-zinc-950/80 to-ultimate-card border border-white/5 rounded-xl shadow-premium space-y-4">
+          <h3 className="text-xs font-black uppercase tracking-widest text-ultimate-accent flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-ultimate-accent animate-pulse" />
+            Siguiente en tu Orden de Lectura
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {nextPending.map((comic) => (
+              <div 
+                key={comic.id} 
+                className="p-4 bg-zinc-900/40 border border-white/5 hover:border-ultimate-accent/20 rounded-lg flex flex-col justify-between gap-3 hover:bg-zinc-900/60 transition-all"
+              >
+                <div>
+                  <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 mb-1">
+                    <span>LEC #{String(comic.ordenLectura).padStart(4, '0')}</span>
+                    <span className="bg-zinc-800 text-zinc-400 px-1 rounded text-[8px] uppercase">{comic.tipo}</span>
+                  </div>
+                  <h4 className="font-extrabold text-white text-xs line-clamp-2 leading-tight mb-1" title={comic.titulo}>
+                    {comic.titulo}
+                  </h4>
+                  <span className="text-[9px] text-zinc-500 font-semibold block truncate">{comic.serie}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleToggleRead(comic)}
+                  className="w-full py-2 bg-ultimate-accent hover:bg-red-700 text-white rounded font-bold text-[10px] uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-1"
+                >
+                  Marcar Leído ✅
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Top filter bar */}
       <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
         <div className="relative flex-1 max-w-md">
